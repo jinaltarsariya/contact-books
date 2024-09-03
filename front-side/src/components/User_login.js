@@ -12,6 +12,8 @@ export default function User_login() {
     password: "",
     remember_me: "",
   });
+  const [loading, setLoading] = useState(false);
+
   const history = useHistory();
   const location = useLocation();
 
@@ -37,24 +39,28 @@ export default function User_login() {
   });
 
   const handleUserLoginData = async (values, { resetForm }) => {
+    setLoading(true);
     try {
-      let postUser = await axios.post(
+      let response = await axios.post(
         "http://localhost:3000/user/login",
         values
       );
 
-      if (postUser.data.flag === 0) {
-        toast.error(postUser.data.msg);
+      if (response.data.flag === 0) {
+        toast.error(response.data.msg);
       } else {
-        localStorage.setItem("UserToken", postUser.data.data);
+        localStorage.setItem("UserToken", response.data.data);
         resetForm();
-        toast.success(postUser.data.msg);
+        toast.success(response.data.msg);
         setTimeout(() => {
-          history.push("/contact");
+          history.push("/dashboard");
         }, 2500);
       }
     } catch (error) {
-      console.log("errror ----> ", error);
+      toast.error("An error occurred during login. Please try again.");
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -158,8 +164,9 @@ export default function User_login() {
                             <button
                               className="btn btn-primary btn-lg"
                               type="submit"
+                              disabled={loading}
                             >
-                              Log in
+                              {loading ? "Logging in..." : "Log in"}
                             </button>
                           </div>
                         </div>

@@ -72,8 +72,8 @@ const updateContact = async (req, res) => {
       "name",
       "mobileNumber",
     ]);
-    if (missingField)
-      return res.json(error_res(`Please provide ${missingField}!`));
+    
+    if (missingField) return res.json(error_res(missingField));
 
     if (!validator.isAlpha(name)) {
       return res.json(

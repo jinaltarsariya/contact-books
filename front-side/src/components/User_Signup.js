@@ -50,11 +50,15 @@ export default function User_Signup() {
         values
       );
 
+      console.log("postUser --------------> ", postUser);
+      console.log("postUser --------------> ", postUser.data.data);
+
       if (postUser.data.flag === 0) {
         toast.error(postUser.data.msg);
       } else {
         resetForm();
         toast.success(postUser.data.msg);
+        localStorage.setItem("UserInfo", JSON.stringify(postUser.data.data));
         setTimeout(() => {
           history.push("/");
         }, 2500);

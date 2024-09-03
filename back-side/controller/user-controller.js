@@ -93,6 +93,7 @@ const postUserSignup = async (req, res) => {
     let createUserRes = await createUser(req.body);
     return res.json(createUserRes);
   } catch (error) {
+    console.log("error -----------> ", error.message);
     return res.json(error_res(error.message));
   }
 };

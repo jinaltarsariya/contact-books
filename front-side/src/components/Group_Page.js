@@ -9,44 +9,44 @@ import Modal from "react-bootstrap/Modal";
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa6";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-export default function Contact_page() {
-  const [contactData, setContactData] = useState([]);
-  const [updateContact, setUpdateContact] = useState(null);
+export default function Group_Page() {
+  const [groupData, setGroupData] = useState([]);
+  const [updateGroup, setUpdateGroup] = useState(null);
   const [show, setShow] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [contactToDelete, setContactToDelete] = useState(null);
+  const [groupToDelete, setGroupToDelete] = useState(null);
 
   const [initialValues, setInitialValues] = useState({
     name: "",
-    mobileNumber: "",
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const contactsPerPage = 5; // Set the number of contacts per page
+  const groupsPerPage = 5; // Set the number of contacts per page
 
   const handleClose = () => {
     setShow(false);
-    setUpdateContact(null); // Reset updateContact state when closing modal
+    setUpdateGroup(null); // Reset updateGroup state when closing modal
   };
   const handleShow = () => setShow(true);
   const handleDeleteClose = () => setShowDeleteModal(false);
 
   const handleDeleteShow = (contact) => {
-    setContactToDelete(contact);
+    setGroupToDelete(contact);
     setShowDeleteModal(true);
   };
 
   const history = useHistory();
   const location = useLocation();
 
-  const ContactValidation = Yup.object().shape({
+  const groupValidation = Yup.object().shape({
     name: Yup.string()
-      .required("Contact Name is required")
-      .min(2, "Too Short!")
-      .max(30, "Too Long!"),
-    mobileNumber: Yup.string()
-      .matches(/^[0-9]{6,10}$/, "Mobile Number must be 6 to 10 digits")
-      .required("Mobile Number is required"),
+      .required("Group Name is required")
+      .min(3, "Too Short!")
+      .max(25, "Too Long!")
+      .matches(
+        /^[a-zA-Z]+(?: [a-zA-Z]+)*$/,
+        "Group Name can only contain letters and single spaces between words"
+      ),
   });
 
   useEffect(() => {
@@ -69,16 +69,16 @@ export default function Contact_page() {
         },
       };
       const response = await axios.get(
-        "http://localhost:3000/contact",
+        "http://localhost:3000/group/list",
         headerToken
       );
-      setContactData(response.data.data);
+      setGroupData(response.data.data);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleContactData = async (values, { resetForm }) => {
+  const handlegroupData = async (values, { resetForm }) => {
     try {
       const headerToken = {
         headers: {
@@ -87,12 +87,12 @@ export default function Contact_page() {
       };
 
       let response = await axios.post(
-        "http://localhost:3000/contact/create",
+        "http://localhost:3000/group/create",
         values,
         headerToken
       );
 
-      setContactData([...contactData, response.data.data]);
+      setGroupData([...groupData, response.data.data]);
       resetForm();
       fetchData();
       handleClose();
@@ -101,7 +101,7 @@ export default function Contact_page() {
     }
   };
 
-  const handleContactUpdate = async (values, { resetForm }) => {
+  const handleGroupUpdate = async (values, { resetForm }) => {
     try {
       const headerToken = {
         headers: {
@@ -109,13 +109,13 @@ export default function Contact_page() {
         },
       };
       let response = await axios.put(
-        `http://localhost:3000/contact/update?contactId=${values._id}`,
+        `http://localhost:3000/group/update?groupId=${values._id}`,
         values,
         headerToken
       );
 
-      setContactData((contactData) =>
-        contactData.map((value) =>
+      setGroupData((groupData) =>
+        groupData.map((value) =>
           value._id === values._id ? response.data : value
         )
       );
@@ -123,7 +123,7 @@ export default function Contact_page() {
       if (response.data.flag === 0) {
         alert(response.data.msg);
       }
-      setUpdateContact(null);
+      setUpdateGroup(null);
       resetForm();
       fetchData();
       handleClose();
@@ -132,7 +132,7 @@ export default function Contact_page() {
     }
   };
 
-  const handleContactDelete = async () => {
+  const handleGroupDelete = async () => {
     try {
       const headerToken = {
         headers: {
@@ -141,7 +141,7 @@ export default function Contact_page() {
       };
 
       await axios.delete(
-        `http://localhost:3000/contact/delete?contactId=${contactToDelete._id}`,
+        `http://localhost:3000/group/delete?groupId=${groupToDelete._id}`,
         headerToken
       );
       fetchData();
@@ -151,15 +151,10 @@ export default function Contact_page() {
     }
   };
 
-  console.log("contactData -> ", contactData);
-  
   // Calculate current contacts to display
-  const indexOfLastContact = currentPage * contactsPerPage;
-  const indexOfFirstContact = indexOfLastContact - contactsPerPage;
-  const currentContacts = contactData?.slice(
-    indexOfFirstContact,
-    indexOfLastContact
-  );
+  const indexOfLastGroup = currentPage * groupsPerPage;
+  const indexOfFirstGroup = indexOfLastGroup - groupsPerPage;
+  const currentGroup = groupData?.slice(indexOfFirstGroup, indexOfLastGroup);
 
   // Pagination controls
   const handlePrevPage = () => {
@@ -169,7 +164,7 @@ export default function Contact_page() {
   };
 
   const handleNextPage = () => {
-    if (currentPage < Math.ceil(contactData.length / contactsPerPage)) {
+    if (currentPage < Math.ceil(groupData?.length / groupsPerPage)) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -195,23 +190,20 @@ export default function Contact_page() {
               backgroundPosition: "center",
             }}
           >
-            {currentContacts && currentContacts.length > 0 ? (
-              currentContacts.map((value, index) => {
+            {currentGroup && currentGroup.length > 0 ? (
+              currentGroup.map((value, index) => {
                 return (
                   <div
                     key={index}
                     className="d-flex justify-content-around align-items-center p-2 border border-light shadow my-4 bg-body rounded bg-white"
                   >
-                    <div className="d-flex flex-column">
-                      <h6>{value.name}</h6>
-                      <h6>{value.mobileNumber}</h6>
-                    </div>
+                    <h6 className="m-0">{value.name}</h6>
                     <div className="text-end">
                       <button
                         type="button"
                         className="btn btn-dark m-1 btn-sm"
                         onClick={() => {
-                          setUpdateContact(value);
+                          setUpdateGroup(value);
                           handleShow();
                         }}
                       >
@@ -264,7 +256,7 @@ export default function Contact_page() {
             onClick={handleNextPage}
             className="ms-2"
             disabled={
-              currentPage === Math.ceil(contactData.length / contactsPerPage)
+              currentPage === Math.ceil(groupData.length / groupsPerPage)
             }
           >
             <FaAngleRight />
@@ -276,44 +268,30 @@ export default function Contact_page() {
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>
-            {updateContact ? "Update Contact" : "Add Contact"}
+            {updateGroup ? "Update Group" : "Add Group"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Formik
-            initialValues={updateContact ? updateContact : initialValues}
-            onSubmit={updateContact ? handleContactUpdate : handleContactData}
-            validationSchema={ContactValidation}
+            initialValues={updateGroup ? updateGroup : initialValues}
+            onSubmit={updateGroup ? handleGroupUpdate : handlegroupData}
+            validationSchema={groupValidation}
             enableReinitialize={true}
           >
             {({ handleSubmit }) => (
               <Form onSubmit={handleSubmit}>
                 <div className="mb-3">
                   <label htmlFor="name" className="form-label">
-                    Contact Name
+                    Group Name
                   </label>
                   <Field
                     id="name"
                     name="name"
-                    placeholder="Contact Name"
+                    placeholder="Group Name"
                     className="form-control"
                   />
                   <div className="text-danger">
                     <ErrorMessage name="name" />
-                  </div>
-                </div>
-                <div className="mb-3">
-                  <label htmlFor="mobileNumber" className="form-label">
-                    Mobile Number
-                  </label>
-                  <Field
-                    id="mobileNumber"
-                    name="mobileNumber"
-                    placeholder="1234567890"
-                    className="form-control"
-                  />
-                  <div className="text-danger">
-                    <ErrorMessage name="mobileNumber" />
                   </div>
                 </div>
                 <Modal.Footer>
@@ -321,7 +299,7 @@ export default function Contact_page() {
                     Close
                   </Button>
                   <Button variant="dark" type="submit">
-                    {updateContact ? "Update Contact" : "Save Contact"}
+                    {updateGroup ? "Update Group" : "Save Group"}
                   </Button>
                 </Modal.Footer>
               </Form>
@@ -333,14 +311,14 @@ export default function Contact_page() {
       {/* delete popup */}
       <Modal show={showDeleteModal} onHide={handleDeleteClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Delete Contact</Modal.Title>
+          <Modal.Title>Delete Group</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this contact?</Modal.Body>
+        <Modal.Body>Are you sure you want to delete this Group?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleDeleteClose}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={handleContactDelete}>
+          <Button variant="danger" onClick={handleGroupDelete}>
             Delete
           </Button>
         </Modal.Footer>

@@ -20,7 +20,7 @@ export default function Navbar() {
       <ToastContainer />
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
-          <Link class="navbar-brand" to="#">
+          <Link class="navbar-brand" to="/dashboard">
             Dashboard
           </Link>
           <button
@@ -37,7 +37,7 @@ export default function Navbar() {
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <Link class="nav-link active" aria-current="page" to="#">
+                <Link class="nav-link active" aria-current="page" to="/group">
                   Group
                 </Link>
               </li>

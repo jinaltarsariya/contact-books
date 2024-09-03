@@ -20,6 +20,7 @@ mongoose
 let indexRouter = require("./routes/index");
 let userRouter = require("./routes/user-route");
 const contactRoute = require("./routes/contact-route");
+const groupRoute = require("./routes/GroupRoute");
 
 app.use(
   session({
@@ -45,6 +46,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/user", userRouter);
 app.use("/contact", contactRoute);
+app.use("/group", groupRoute);
 
 app.get(
   "/auth/google",
